@@ -23,8 +23,38 @@
   <div class="card">
     <div class="card-body login-card-body">
       <p class="login-box-msg">Iniciar sesión</p>
+      <?php
+        if(isset($_REQUEST['login'])){
+          session_start();
+          $email= $_REQUEST['email']??'';
+          $password= $_REQUEST['pass']??'';
+          $password=md5($password);
+          include_once "db_ecommerce.php";
+          $con=mysqli_connect($host,$user,$pass,$db);
+          if ($con == false){
+            die(
+              "Error de conexión"
+            );
+          }
+          $query = "SELECT id,email,nombre from usuarios where email='" . $email . "' and pass='" . $password . "';  ";
+          $res=mysqli_query($con,$query);
+          $row=mysqli_fetch_assoc($res);
+          if($row){
+            $_SESSION['id']=$row['id'];
+            $_SESSION['email']=$row['email'];
+            $_SESSION['nombre']=$row['nombre'];
+            header("location: panel.php");
+          }else{
+        ?>
+            <div class="alert alert-danger" role="alert">
+              Error de login
+            </div>
+        <?php
+          }
+        }
+        ?>
 
-      <form action="../../index3.html" method="post">
+      <form  method="post">
         <div class="input-group mb-3">
           <input type="email" class="form-control" placeholder="Email" name="email"> 
           <div class="input-group-append">
